@@ -13,5 +13,5 @@ sealed class Destination(val route: String, vararg params: String) {
     operator fun invoke(): String = route
   }
 
-  object Home : NoArgumentsDestination("home")
+  object Search : NoArgumentsDestination("search")
 }

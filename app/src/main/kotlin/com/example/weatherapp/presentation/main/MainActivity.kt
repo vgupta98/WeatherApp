@@ -7,11 +7,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.domain.navigation.Destination
@@ -20,6 +20,7 @@ import com.example.weatherapp.domain.navigation.NavigationIntent
 import com.example.weatherapp.domain.navigation.NavigationIntent.NavigateBack
 import com.example.weatherapp.domain.navigation.NavigationIntent.NavigateTo
 import com.example.weatherapp.domain.navigation.composable
+import com.example.weatherapp.presentation.search.SearchScreen
 import com.example.weatherapp.presentation.theme.WeatherAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.channels.Channel
@@ -39,13 +40,13 @@ class MainActivity : ComponentActivity() {
         Column(Modifier.fillMaxSize()) {
           NavHost(
             navController = navController,
-            startDestination = Destination.Home,
+            startDestination = Destination.Search,
             modifier = Modifier.weight(1f),
           ) {
             composable(
-              destination = Destination.Home,
+              destination = Destination.Search,
             ) {
-              Text(text = "Home")
+              SearchScreen(viewModel = hiltViewModel())
             }
           }
         }

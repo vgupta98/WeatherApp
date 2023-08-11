@@ -1,4 +1,4 @@
-package com.example.weatherapp.domain.dependency
+package com.example.weatherapp.data.dependency
 
 import com.example.weatherapp.domain.navigation.Navigator
 import dagger.Module

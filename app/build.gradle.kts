@@ -60,6 +60,9 @@ dependencies {
   implementation("androidx.compose.ui:ui-tooling-preview")
   implementation("androidx.compose.material3:material3")
 
+  // coroutines
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2")
+
   // compose navigation
   implementation("androidx.navigation:navigation-compose:2.6.0")
 
@@ -76,6 +79,9 @@ dependencies {
   // retrofit
   implementation("com.squareup.retrofit2:retrofit:2.9.0")
   implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+
+  // location
+  implementation("com.google.android.gms:play-services-location:21.0.1")
 
   implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 

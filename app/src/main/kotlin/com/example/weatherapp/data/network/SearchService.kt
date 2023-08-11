@@ -1,6 +1,6 @@
 package com.example.weatherapp.data.network
 
-import com.example.weatherapp.data.model.SearchResult
+import com.example.weatherapp.domain.model.SearchResult
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

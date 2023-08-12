@@ -22,6 +22,7 @@ import com.example.weatherapp.domain.navigation.NavigationIntent.NavigateTo
 import com.example.weatherapp.domain.navigation.composable
 import com.example.weatherapp.presentation.search.SearchScreen
 import com.example.weatherapp.presentation.theme.WeatherAppTheme
+import com.example.weatherapp.presentation.weather.WeatherScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -49,6 +50,12 @@ class MainActivity : ComponentActivity() {
               destination = Destination.Search,
             ) {
               SearchScreen(viewModel = hiltViewModel())
+            }
+
+            composable(
+              destination = Destination.Weather
+            ) {
+              WeatherScreen(viewModel = hiltViewModel())
             }
           }
         }

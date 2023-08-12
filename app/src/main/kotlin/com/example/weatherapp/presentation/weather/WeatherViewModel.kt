@@ -1,11 +1,11 @@
-package com.example.weatherapp.presentation.search
+package com.example.weatherapp.presentation.weather
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherapp.data.repository.SearchRepository
+import com.example.weatherapp.data.repository.WeatherRepository
 import com.example.weatherapp.domain.navigation.Destination
-import com.example.weatherapp.domain.navigation.Navigator
 import com.example.weatherapp.domain.network.DataState.Error
 import com.example.weatherapp.domain.network.DataState.Loading
 import com.example.weatherapp.domain.network.DataState.Success
@@ -15,22 +15,19 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(
-  private val searchRepository: SearchRepository,
-  private val navigator: Navigator,
+class WeatherViewModel @Inject constructor(
+  private val weatherRepository: WeatherRepository,
+  savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+  private val latLong = savedStateHandle[Destination.Weather.LAT_LONG] ?: ""
+
   init {
-    searchRepository.search("Lond").onEach {
+    weatherRepository.getCurrentWeather(latLong = latLong).onEach {
       when (it) {
-        is Error -> Log.d("SearchResult", it.error.toString())
+        is Error -> Log.d("WeatherResult", it.error.toString())
         is Loading -> {}
-        is Success -> Log.d("SearchResult", it.data.toString())
+        is Success -> Log.d("WeatherResult", it.data.toString())
       }
-
     }.launchIn(viewModelScope)
-  }
-
-  fun navigateToWeatherScreen(latLong: String) {
-    navigator.tryNavigateTo(route = Destination.Weather(latLong = latLong))
   }
 }

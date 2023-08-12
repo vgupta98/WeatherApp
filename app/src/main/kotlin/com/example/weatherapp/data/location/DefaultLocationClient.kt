@@ -40,7 +40,7 @@ class DefaultLocationClient(
 
       val currentLocationRequest = CurrentLocationRequest.Builder()
         .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
-        .setDurationMillis(2000)
+        .setDurationMillis(1000)
         .setMaxUpdateAgeMillis(maxUpdateAge)
         .setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
         .build()

@@ -6,7 +6,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.example.weatherapp.data.location.DefaultLocationClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.FlowPreview
@@ -65,7 +68,8 @@ fun SearchScreen(
             val lat = fetchedLocation.latitude.toString()
             val long = fetchedLocation.longitude.toString()
 
-            location = "$lat , $long"
+            location = "$lat,$long"
+            Log.d("User Location", location)
           }
           .firstOrNull()
       }
@@ -92,7 +96,13 @@ fun SearchScreen(
     }) {
       Text(text = "Get location")
     }
-
+    Spacer(Modifier.size(16.dp))
     Text(text = location)
+    Spacer(modifier = Modifier.size(16.dp))
+    Button(onClick = {
+      viewModel.navigateToWeatherScreen(location)
+    }) {
+      Text(text = "Navigate to weather screen")
+    }
   }
 }

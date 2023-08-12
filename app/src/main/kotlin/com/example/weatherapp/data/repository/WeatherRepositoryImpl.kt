@@ -5,33 +5,34 @@ import com.example.weatherapp.data.network.WeatherService
 import com.example.weatherapp.domain.extension.parse
 import com.example.weatherapp.domain.model.Location
 import com.example.weatherapp.domain.network.DataState
+import com.example.weatherapp.domain.repository.WeatherRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class WeatherRepository @Inject constructor(
+class WeatherRepositoryImpl @Inject constructor(
   private val weatherService: WeatherService,
   private val locationDao: LocationDao,
-) {
-  fun getCurrentWeather(latLong: String) = flow {
+): WeatherRepository {
+  override fun getCurrentWeather(latLong: String) = flow {
     emit(DataState.Loading())
     emit(DataState.Success(weatherService.getCurrentWeather(latLong = latLong).parse()))
   }.catch {
     emit(DataState.Error(it))
   }
 
-  fun getForecast(latLong: String) = flow {
+  override fun getForecast(latLong: String) = flow {
     emit(DataState.Loading())
     emit(DataState.Success(weatherService.getForecast(latLong = latLong).parse()))
   }.catch {
     emit(DataState.Error(it))
   }
 
-  suspend fun addLocation(location: Location) {
+  override suspend fun addLocation(location: Location) {
     locationDao.upsert(location)
   }
 
-  suspend fun removeLocation(id: Long) {
+  override suspend fun removeLocation(id: Long) {
     locationDao.deleteLocation(id)
   }
 }

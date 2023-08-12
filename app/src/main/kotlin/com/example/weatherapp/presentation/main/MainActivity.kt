@@ -14,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.weatherapp.data.location.DefaultLocationClient
+import com.example.weatherapp.domain.location.LocationClient
 import com.example.weatherapp.domain.navigation.Destination
 import com.example.weatherapp.domain.navigation.NavHost
 import com.example.weatherapp.domain.navigation.NavigationIntent
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
   private val viewModel by viewModels<MainViewModel>()
 
   @Inject
-  lateinit var locationClient: DefaultLocationClient
+  lateinit var locationClient: LocationClient
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

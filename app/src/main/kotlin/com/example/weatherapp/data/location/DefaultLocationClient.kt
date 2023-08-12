@@ -16,15 +16,19 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 const val REQUEST_CODE_LOCATION_SETTINGS = 2242
 
-class DefaultLocationClient(
-  private val context: Context,
+@ActivityScoped
+class DefaultLocationClient @Inject constructor(
+  @ActivityContext private val context: Context,
   private val client: FusedLocationProviderClient,
 ) : LocationClient {
   @SuppressLint("MissingPermission")

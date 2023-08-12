@@ -20,10 +20,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.weatherapp.data.location.DefaultLocationClient
-import com.google.android.gms.location.LocationServices
+import com.example.weatherapp.domain.location.LocationClient
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.catch
@@ -36,6 +34,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @OptIn(FlowPreview::class)
 @Composable
 fun SearchScreen(
+  locationClient: LocationClient,
   viewModel: SearchViewModel
 ) {
 
@@ -43,13 +42,6 @@ fun SearchScreen(
     mutableStateOf("")
   }
   val scope = rememberCoroutineScope()
-  val context = LocalContext.current
-  val locationClient = remember {
-    DefaultLocationClient(
-      context,
-      LocationServices.getFusedLocationProviderClient(context.applicationContext)
-    )
-  }
 
   val locationPermissionRequest = rememberLauncherForActivityResult(
     ActivityResultContracts.RequestPermission()

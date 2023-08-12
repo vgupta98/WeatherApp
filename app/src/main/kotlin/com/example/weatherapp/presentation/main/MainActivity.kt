@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.weatherapp.data.location.DefaultLocationClient
 import com.example.weatherapp.domain.navigation.Destination
 import com.example.weatherapp.domain.navigation.NavHost
 import com.example.weatherapp.domain.navigation.NavigationIntent
@@ -26,11 +27,15 @@ import com.example.weatherapp.presentation.weather.WeatherScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
   private val viewModel by viewModels<MainViewModel>()
+
+  @Inject
+  lateinit var locationClient: DefaultLocationClient
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -49,7 +54,10 @@ class MainActivity : ComponentActivity() {
             composable(
               destination = Destination.Search,
             ) {
-              SearchScreen(viewModel = hiltViewModel())
+              SearchScreen(
+                viewModel = hiltViewModel(),
+                locationClient = locationClient
+              )
             }
 
             composable(

@@ -17,4 +17,7 @@ interface LocationDao {
 
   @Query("DELETE from Location WHERE id = :id")
   suspend fun deleteLocation(id: Long)
+
+  @Query("SELECT * from Location WHERE name = :name AND region = :region AND lat = :lat AND lon = :lon")
+  suspend fun getLocationByParams(name: String, region: String, lat: Double, lon: Double): List<Location>
 }

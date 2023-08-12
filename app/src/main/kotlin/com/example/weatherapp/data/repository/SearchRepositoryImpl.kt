@@ -12,7 +12,7 @@ import javax.inject.Inject
 class SearchRepositoryImpl @Inject constructor(
   private val searchService: SearchService,
   private val locationDao: LocationDao
-): SearchRepository {
+) : SearchRepository {
   override fun search(query: String) =
     flow {
       emit(DataState.Loading())
@@ -27,4 +27,11 @@ class SearchRepositoryImpl @Inject constructor(
   override suspend fun removeLocation(id: Long) {
     locationDao.deleteLocation(id)
   }
+
+  override suspend fun checkIfLocationExists(
+    name: String,
+    region: String,
+    lat: Double,
+    lon: Double
+  ) = locationDao.getLocationByParams(name, region, lat, lon).firstOrNull()
 }

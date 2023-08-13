@@ -27,6 +27,7 @@ fun HourForecastCard(
 ) {
   Column(
     modifier = Modifier
+      .fillMaxWidth()
       .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(size = 8.dp))
       .padding(horizontal = 12.dp, vertical = 11.dp)
   ) {

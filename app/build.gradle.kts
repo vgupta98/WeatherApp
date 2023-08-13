@@ -7,12 +7,12 @@ plugins {
 
 android {
   namespace = "com.example.weatherapp"
-  compileSdk = 33
+  compileSdk = 34
 
   defaultConfig {
     applicationId = "com.example.weatherapp"
     minSdk = 24
-    targetSdk = 33
+    targetSdk = 34
     versionCode = 1
     versionName = "1.0"
 
@@ -83,8 +83,10 @@ dependencies {
   // location
   implementation("com.google.android.gms:play-services-location:21.0.1")
 
+  // http logging
   implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
+  // room
   val room_version = "2.5.2"
 
   implementation("androidx.room:room-runtime:$room_version")
@@ -93,8 +95,15 @@ dependencies {
   // To use Kotlin annotation processing tool (kapt)
   kapt("androidx.room:room-compiler:$room_version")
 
-  // optional - Kotlin Extensions and Coroutines support for Room
+  // Kotlin Extensions and Coroutines support for Room
   implementation("androidx.room:room-ktx:$room_version")
+
+  // coil
+  implementation("io.coil-kt:coil-compose:2.4.0")
+
+  implementation("androidx.compose.material3:material3:1.1.1")
+  implementation("androidx.compose.material3:material3-window-size-class:1.1.1")
+  implementation("androidx.compose.material:material:1.5.0")
 
   testImplementation("junit:junit:4.13.2")
   androidTestImplementation("androidx.test.ext:junit:1.1.5")

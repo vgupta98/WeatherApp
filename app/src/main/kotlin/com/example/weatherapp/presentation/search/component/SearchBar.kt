@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.example.weatherapp.R
 import com.example.weatherapp.presentation.theme.WeatherAppTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
   searchValue: String,
@@ -80,9 +78,11 @@ fun SearchBar(
         },
         textStyle = MaterialTheme.typography.labelMedium,
         singleLine = true,
-        colors = TextFieldDefaults.textFieldColors(
-          containerColor = Color.Transparent,
-          textColor = Color(0xFF303030),
+        colors = TextFieldDefaults.colors(
+          focusedContainerColor = Color.Transparent,
+          unfocusedContainerColor = Color.Transparent,
+          focusedTextColor = Color(0xFF303030),
+          unfocusedTextColor = Color(0xFF303030),
           cursorColor = Color(0xFF303030),
           unfocusedIndicatorColor = Color.Transparent,
           focusedIndicatorColor = Color.Transparent
@@ -111,11 +111,9 @@ private fun SearchBarPreview() {
     mutableStateOf("")
   }
   WeatherAppTheme {
-
     SearchBar(
       searchValue = searchValue,
       onSearchValueChange = { searchValue = it },
     )
-
   }
 }

@@ -5,6 +5,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.R
 
@@ -23,8 +24,26 @@ val Typography = Typography(
     lineHeight = 28.sp,
     letterSpacing = 0.sp
   ),
+  displayLarge = TextStyle(
+    fontSize = 120.sp,
+    fontFamily = Avenir,
+    fontWeight = FontWeight(900),
+    textAlign = TextAlign.Center,
+  ),
+  displaySmall = TextStyle(
+    fontSize = 40.sp,
+    lineHeight = 22.sp,
+    fontFamily = Avenir,
+    fontWeight = FontWeight(400),
+  ),
   labelMedium = TextStyle(
     fontSize = 16.sp,
+    fontFamily = Avenir,
+    fontWeight = FontWeight(400),
+  ),
+  labelSmall = TextStyle(
+    fontSize = 12.sp,
+    lineHeight = 22.sp,
     fontFamily = Avenir,
     fontWeight = FontWeight(400),
   ),

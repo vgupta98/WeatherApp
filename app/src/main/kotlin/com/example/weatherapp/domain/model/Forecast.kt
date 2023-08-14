@@ -11,6 +11,8 @@ data class Forecast(
 @JsonClass(generateAdapter = true)
 data class ForecastDay(
   val date: String,
+  @Json(name = "date_epoch")
+  val dateEpoch: Long,
   val day: Day,
   val hour: List<HourForecast>,
   val astro: Astro,
@@ -21,12 +23,14 @@ data class Day(
   @Json(name = "maxtemp_c")
   val maxtempC: Double,
   @Json(name = "mintemp_c")
-  val mintemp_c: Double,
+  val mintempC: Double,
   val condition: Condition,
 )
 
 @JsonClass(generateAdapter = true)
 data class HourForecast(
+  @Json(name = "time_epoch")
+  val timeEpoch: Long,
   val time: String,
   @Json(name = "temp_c")
   val tempC: Double,

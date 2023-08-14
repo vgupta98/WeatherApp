@@ -11,7 +11,14 @@ interface WeatherRepository {
 
   fun getForecast(latLong: String): Flow<DataState<ForecastResponse>>
 
-  suspend fun addLocation(location: Location)
+  suspend fun addLocation(location: Location): Long
 
   suspend fun removeLocation(id: Long)
+
+  suspend fun checkIfLocationExists(
+    name: String,
+    region: String,
+    lat: Double,
+    lon: Double
+  ): Location?
 }

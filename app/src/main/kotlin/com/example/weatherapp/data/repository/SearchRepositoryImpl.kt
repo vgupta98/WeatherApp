@@ -27,11 +27,4 @@ class SearchRepositoryImpl @Inject constructor(
   override suspend fun removeLocation(id: Long) {
     locationDao.deleteLocation(id)
   }
-
-  override suspend fun checkIfLocationExists(
-    name: String,
-    region: String,
-    lat: Double,
-    lon: Double
-  ) = locationDao.getLocationByParams(name, region, lat, lon).firstOrNull()
 }

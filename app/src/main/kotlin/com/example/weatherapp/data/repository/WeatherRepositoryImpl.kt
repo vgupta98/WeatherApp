@@ -13,7 +13,7 @@ import javax.inject.Inject
 class WeatherRepositoryImpl @Inject constructor(
   private val weatherService: WeatherService,
   private val locationDao: LocationDao,
-): WeatherRepository {
+) : WeatherRepository {
   override fun getCurrentWeather(latLong: String) = flow {
     emit(DataState.Loading())
     emit(DataState.Success(weatherService.getCurrentWeather(latLong = latLong).parse()))
@@ -28,11 +28,17 @@ class WeatherRepositoryImpl @Inject constructor(
     emit(DataState.Error(it))
   }
 
-  override suspend fun addLocation(location: Location) {
+  override suspend fun addLocation(location: Location) =
     locationDao.upsert(location)
-  }
 
   override suspend fun removeLocation(id: Long) {
     locationDao.deleteLocation(id)
   }
+
+  override suspend fun checkIfLocationExists(
+    name: String,
+    region: String,
+    lat: Double,
+    lon: Double
+  ) = locationDao.getLocationByParams(name, region, lat, lon).firstOrNull()
 }

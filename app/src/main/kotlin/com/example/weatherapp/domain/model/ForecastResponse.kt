@@ -7,9 +7,8 @@ data class ForecastResponse(
   val location: Location,
   val current: Current,
   val forecast: Forecast,
-  val alerts: AlertList,
+  val alerts: AlertList?,
 )
-
 
 @JsonClass(generateAdapter = true)
 data class AlertList(

@@ -11,6 +11,4 @@ interface SearchRepository {
   suspend fun getAllLocations(): List<Location>
 
   suspend fun removeLocation(id: Long)
-
-  suspend fun checkIfLocationExists(name: String, region: String, lat: Double, lon: Double): Location?
 }

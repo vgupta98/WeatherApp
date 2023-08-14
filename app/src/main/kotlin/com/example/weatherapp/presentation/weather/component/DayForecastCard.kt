@@ -21,10 +21,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.weatherapp.R
+import com.example.weatherapp.domain.model.ForecastDay
+import com.example.weatherapp.presentation.weather.getCurrentWeekDay
 
 @Composable
 fun DayForecastCard(
-  dayForecasts: List<DayForecast>
+  dayForecasts: List<DayForecastUiModel>
 ) {
   Column(
     modifier = Modifier
@@ -54,7 +56,7 @@ fun DayForecastCard(
 }
 
 @Composable
-private fun DayForecastRow(forecast: DayForecast) {
+private fun DayForecastRow(forecast: DayForecastUiModel) {
   Column {
     Row(
       modifier = Modifier.padding(vertical = 4.dp)
@@ -104,12 +106,20 @@ private fun DayForecastRow(forecast: DayForecast) {
   }
 }
 
-data class DayForecast(
+data class DayForecastUiModel(
   val day: String,
   val icon: String,
   val lowTemperature: String,
   val highTemperature: String
 )
+
+fun ForecastDay.toDayForecastUiModel(): DayForecastUiModel =
+  DayForecastUiModel(
+    day = dateEpoch.getCurrentWeekDay(),
+    icon = "http:${day.condition.icon}",
+    lowTemperature = day.mintempC.toString(),
+    highTemperature = day.maxtempC.toString()
+  )
 
 @Preview
 @Composable
@@ -117,31 +127,31 @@ private fun DayForecastCardPreview() {
   MaterialTheme {
     DayForecastCard(
       dayForecasts = listOf(
-        DayForecast(
+        DayForecastUiModel(
           day = "Today",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           lowTemperature = "19°c",
           highTemperature = "39°c"
         ),
-        DayForecast(
+        DayForecastUiModel(
           day = "Mon",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           lowTemperature = "19°c",
           highTemperature = "39°c"
         ),
-        DayForecast(
+        DayForecastUiModel(
           day = "Tues",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           lowTemperature = "19°c",
           highTemperature = "39°c"
         ),
-        DayForecast(
+        DayForecastUiModel(
           day = "Tues",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           lowTemperature = "19°c",
           highTemperature = "39°c"
         ),
-        DayForecast(
+        DayForecastUiModel(
           day = "Tues",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           lowTemperature = "19°c",

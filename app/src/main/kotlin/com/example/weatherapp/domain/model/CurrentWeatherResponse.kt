@@ -29,7 +29,7 @@ data class Current(
   @Json(name = "last_updated")
   val lastUpdated: String,
   @Json(name = "last_updated_epoch")
-  val lastUpdatedEpoch: Int,
+  val lastUpdatedEpoch: Long,
   @Json(name = "precip_in")
   val precipIn: Double,
   @Json(name = "precip_mm")

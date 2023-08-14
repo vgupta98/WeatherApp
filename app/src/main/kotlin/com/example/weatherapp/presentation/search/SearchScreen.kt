@@ -9,9 +9,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,10 +21,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,6 +50,10 @@ fun SearchScreen(
 ) {
 
   val scope = rememberCoroutineScope()
+  val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+  LaunchedEffect(key1 = isKeyboardVisible) {
+    Log.d("SearchScreen", "SearchScreen: $isKeyboardVisible")
+  }
 
   val locationPermissionRequest = rememberLauncherForActivityResult(
     ActivityResultContracts.RequestPermission()
@@ -80,7 +88,7 @@ fun SearchScreen(
       .fillMaxSize()
       .background(Color.White)
   ) {
-    Spacer(modifier = Modifier.size(103.dp))
+    Spacer(modifier = Modifier.size(123.dp))
     Text(
       text = "Weather App",
       style = MaterialTheme.typography.titleLarge,
@@ -91,29 +99,39 @@ fun SearchScreen(
     SearchBar(searchValue = viewModel.searchQuery, onSearchValueChange = viewModel::onQueryChange)
 
     when {
-      viewModel.savedLocations.isEmpty() && viewModel.searchedLocations.isEmpty() -> {
-        Column(
-          modifier = Modifier.padding(horizontal = 56.dp),
-          horizontalAlignment = Alignment.CenterHorizontally
+      isKeyboardVisible || viewModel.searchedLocations.isNotEmpty() -> {
+        LazyColumn(
+          modifier = Modifier.fillMaxWidth()
         ) {
-          Spacer(modifier = Modifier.size(84.dp))
-          Icon(
-            modifier = Modifier.size(88.dp),
-            painter = painterResource(id = R.drawable.ic_weather_mix),
-            contentDescription = null,
-            tint = Color(0xFFE5E5E5)
-          )
-          Spacer(modifier = Modifier.size(28.dp))
-          Text(
-            textAlign = TextAlign.Center,
-            text = "Search for a city or US/UK zip to check the weather",
-            style = MaterialTheme.typography.labelMedium,
-            color = Color(0xFFBEBEBE)
-          )
+          item {
+            CurrentLocation {
+              // get current location and navigate to weather screen
+              locationPermissionRequest.launch(
+                Manifest.permission.ACCESS_COARSE_LOCATION
+              )
+            }
+          }
+          items(
+            count = viewModel.searchedLocations.size,
+            key = { index ->
+              viewModel.searchedLocations[index].id
+            }
+          ) { index ->
+            SearchedLocationCard(
+              locationName = viewModel.searchedLocations[index].name,
+              regionName = viewModel.searchedLocations[index].region,
+              countryName = viewModel.searchedLocations[index].country
+            ) {
+              // navigate to weather screen
+              viewModel.navigateToWeatherScreen(
+                latLong = "${viewModel.searchedLocations[index].lat},${viewModel.searchedLocations[index].lon}"
+              )
+            }
+          }
         }
       }
 
-      viewModel.searchedLocations.isEmpty() -> {
+      viewModel.savedLocations.isNotEmpty() -> {
         LazyColumn(
           modifier = Modifier.fillMaxWidth()
         ) {
@@ -140,35 +158,111 @@ fun SearchScreen(
         }
       }
 
-      viewModel.savedLocations.isEmpty() -> {
-        LazyColumn(
-          modifier = Modifier.fillMaxWidth()
+      else -> {
+        Column(
+          modifier = Modifier.padding(horizontal = 56.dp),
+          horizontalAlignment = Alignment.CenterHorizontally
         ) {
-          item {
-            CurrentLocation {
-              // get current location and navigate to weather screen
-              locationPermissionRequest.launch(
-                Manifest.permission.ACCESS_COARSE_LOCATION
-              )
-            }
-          }
-          items(
-            count = viewModel.searchedLocations.size,
-            key = { index ->
-              viewModel.searchedLocations[index].id
-            }
-          ) { index ->
-            SearchedLocationCard(
-              locationName = viewModel.searchedLocations[index].name,
-              regionName = viewModel.searchedLocations[index].region,
-              countryName = viewModel.searchedLocations[index].country
-            ) {
-              // navigate to weather screen
-            }
-          }
+          Spacer(modifier = Modifier.size(84.dp))
+          Icon(
+            modifier = Modifier.size(88.dp),
+            painter = painterResource(id = R.drawable.ic_weather_mix),
+            contentDescription = null,
+            tint = Color(0xFFE5E5E5)
+          )
+          Spacer(modifier = Modifier.size(28.dp))
+          Text(
+            textAlign = TextAlign.Center,
+            text = "Search for a city or US/UK zip to check the weather",
+            style = MaterialTheme.typography.labelMedium,
+            color = Color(0xFFBEBEBE)
+          )
         }
       }
     }
+
+    // when {
+    //   viewModel.savedLocations.isEmpty() && viewModel.searchedLocations.isEmpty() -> {
+    //     Column(
+    //       modifier = Modifier.padding(horizontal = 56.dp),
+    //       horizontalAlignment = Alignment.CenterHorizontally
+    //     ) {
+    //       Spacer(modifier = Modifier.size(84.dp))
+    //       Icon(
+    //         modifier = Modifier.size(88.dp),
+    //         painter = painterResource(id = R.drawable.ic_weather_mix),
+    //         contentDescription = null,
+    //         tint = Color(0xFFE5E5E5)
+    //       )
+    //       Spacer(modifier = Modifier.size(28.dp))
+    //       Text(
+    //         textAlign = TextAlign.Center,
+    //         text = "Search for a city or US/UK zip to check the weather",
+    //         style = MaterialTheme.typography.labelMedium,
+    //         color = Color(0xFFBEBEBE)
+    //       )
+    //     }
+    //   }
+    //
+    //   viewModel.searchedLocations.isEmpty() -> {
+    //     LazyColumn(
+    //       modifier = Modifier.fillMaxWidth()
+    //     ) {
+    //       items(
+    //         count = viewModel.savedLocations.size,
+    //         key = { index ->
+    //           viewModel.savedLocations[index].id
+    //         }
+    //       ) { index ->
+    //         SavedLocationCard(
+    //           locationName = viewModel.savedLocations[index].name,
+    //           locationRegion = "${viewModel.savedLocations[index].region}, ${viewModel.savedLocations[index].country}",
+    //           temperature = viewModel.savedLocations[index].lastTemperature,
+    //           weatherIconUrl = "http:${viewModel.savedLocations[index].iconUrl}",
+    //           weatherTime = viewModel.savedLocations[index].localtimeEpoch.toFormattedTime(),
+    //           onTap = {
+    //             viewModel.navigateToWeatherScreen("${viewModel.savedLocations[index].lat},${viewModel.savedLocations[index].lon}")
+    //           },
+    //           onDelete = {
+    //             viewModel.removeLocation(viewModel.savedLocations[index].id)
+    //           }
+    //         )
+    //       }
+    //     }
+    //   }
+    //
+    //   else -> {
+    //     LazyColumn(
+    //       modifier = Modifier.fillMaxWidth()
+    //     ) {
+    //       item {
+    //         CurrentLocation {
+    //           // get current location and navigate to weather screen
+    //           locationPermissionRequest.launch(
+    //             Manifest.permission.ACCESS_COARSE_LOCATION
+    //           )
+    //         }
+    //       }
+    //       items(
+    //         count = viewModel.searchedLocations.size,
+    //         key = { index ->
+    //           viewModel.searchedLocations[index].id
+    //         }
+    //       ) { index ->
+    //         SearchedLocationCard(
+    //           locationName = viewModel.searchedLocations[index].name,
+    //           regionName = viewModel.searchedLocations[index].region,
+    //           countryName = viewModel.searchedLocations[index].country
+    //         ) {
+    //           // navigate to weather screen
+    //           viewModel.navigateToWeatherScreen(
+    //             latLong = "${viewModel.searchedLocations[index].lat},${viewModel.searchedLocations[index].lon}"
+    //           )
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   }
 }
 
@@ -227,5 +321,6 @@ private fun CurrentLocation(
 }
 
 private fun Long.toFormattedTime(): String {
+  // todo: implement getting a formatted time
   return "5 a.m."
 }

@@ -19,11 +19,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.weatherapp.domain.model.HourForecast
+import com.example.weatherapp.presentation.weather.getCurrentHour
 
 @Composable
 fun HourForecastCard(
   conditionName: String,
-  hourForecasts: List<HourForecast>
+  hourForecasts: List<HourForecastUiModel>
 ) {
   Column(
     modifier = Modifier
@@ -43,7 +45,7 @@ fun HourForecastCard(
     Row(
       modifier = Modifier.fillMaxWidth(),
       verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.SpaceEvenly
+      horizontalArrangement = Arrangement.SpaceBetween
     ) {
       hourForecasts.forEach { forecast ->
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -68,10 +70,16 @@ fun HourForecastCard(
   }
 }
 
-data class HourForecast(
+data class HourForecastUiModel(
   val hour: String,
   val icon: String,
   val temperature: String
+)
+
+fun HourForecast.toHourForecastUiModel(): HourForecastUiModel = HourForecastUiModel(
+  hour = timeEpoch.getCurrentHour().toString(),
+  icon = "http:${condition.icon}",
+  temperature = tempC.toString()
 )
 
 @Preview
@@ -81,37 +89,37 @@ private fun HourForecastCardPreview() {
     HourForecastCard(
       conditionName = "Sunny",
       hourForecasts = listOf(
-        HourForecast(
+        HourForecastUiModel(
           hour = "Now",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           temperature = "19°c"
         ),
-        HourForecast(
+        HourForecastUiModel(
           hour = "2",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           temperature = "19°c"
         ),
-        HourForecast(
+        HourForecastUiModel(
           hour = "3",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           temperature = "19°c"
         ),
-        HourForecast(
+        HourForecastUiModel(
           hour = "4",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           temperature = "19°c"
         ),
-        HourForecast(
+        HourForecastUiModel(
           hour = "5",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           temperature = "19°c"
         ),
-        HourForecast(
+        HourForecastUiModel(
           hour = "6",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           temperature = "19°c"
         ),
-        HourForecast(
+        HourForecastUiModel(
           hour = "7",
           icon = "http://cdn.weatherapi.com/weather/64x64/day/113.png",
           temperature = "19°c"

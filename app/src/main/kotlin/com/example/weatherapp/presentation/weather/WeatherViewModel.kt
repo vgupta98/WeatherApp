@@ -1,6 +1,7 @@
 package com.example.weatherapp.presentation.weather
 
 import android.util.Log
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,8 +25,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.min
+
+private val calendar: Calendar = Calendar.getInstance()
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
@@ -43,6 +47,8 @@ class WeatherViewModel @Inject constructor(
 
   var savedLocationId: Long? by mutableStateOf(null)
     private set
+
+  val isLoading by derivedStateOf { currentWeatherResponse == null || forecastWeatherResponse == null }
 
   init {
     weatherRepository.getCurrentWeather(latLong = latLong).onEach {
@@ -84,7 +90,7 @@ class WeatherViewModel @Inject constructor(
       if (savedLocationId == null) {
         addLocation(it)
       } else {
-        removeLocation(it)
+        removeLocation(savedLocationId ?: 0)
       }
     }
   }
@@ -103,10 +109,10 @@ class WeatherViewModel @Inject constructor(
   }
 
   private fun removeLocation(
-    location: Location
+    locationId: Long
   ) {
     viewModelScope.launch {
-      weatherRepository.removeLocation(location.id)
+      weatherRepository.removeLocation(locationId)
       savedLocationId = null
     }
   }
@@ -114,8 +120,10 @@ class WeatherViewModel @Inject constructor(
   fun getHourForecasts(): List<HourForecastUiModel> {
     val currentHour = forecastWeatherResponse?.current?.lastUpdatedEpoch?.getCurrentHour() ?: 0
     val forecasts = forecastWeatherResponse?.forecast?.forecastday?.get(0)?.hour
+    Log.d("getHourForecasts", "getHourForecasts: ${forecasts?.size}")
+    Log.d("getHourForecasts", "currentHour: ${currentHour}")
     val hourForecasts: MutableList<HourForecastUiModel>? =
-      forecasts?.slice(currentHour..min(forecasts.size, currentHour + 6))?.map {
+      forecasts?.slice(currentHour..min(forecasts.size - 1, currentHour + 6))?.map {
         it.toHourForecastUiModel()
       }?.toMutableList()
 
@@ -139,11 +147,16 @@ class WeatherViewModel @Inject constructor(
 }
 
 fun Long.getCurrentHour(): Int {
-  // todo: implement get current hour
-  return 2
+  calendar.timeInMillis = this * 1000
+  Log.d("getCurrentHour", "getCurrentHour: ${calendar.get(Calendar.HOUR_OF_DAY)}")
+  return calendar.get(Calendar.HOUR_OF_DAY)
 }
 
 fun Long.getCurrentWeekDay(): String {
-  // todo: implement get current week day i.e tues, mon
-  return "Tues"
+
+  calendar.timeInMillis = this * 1000
+  val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+  val dayNames = arrayOf("Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat")
+  return dayNames[dayOfWeek - Calendar.SUNDAY]
 }

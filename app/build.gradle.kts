@@ -101,6 +101,11 @@ dependencies {
   // coil
   implementation("io.coil-kt:coil-compose:2.4.0")
 
+
+  // lottie
+  implementation("com.airbnb.android:lottie:6.1.0")
+  implementation ("com.airbnb.android:lottie-compose:6.1.0")
+
   implementation("androidx.compose.material3:material3:1.1.1")
   implementation("androidx.compose.material3:material3-window-size-class:1.1.1")
   implementation("androidx.compose.material:material:1.5.0")

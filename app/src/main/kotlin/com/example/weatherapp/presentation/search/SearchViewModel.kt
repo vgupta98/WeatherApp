@@ -65,7 +65,12 @@ class SearchViewModel @Inject constructor(
           }
         }
     }
+    // refreshSavedLocations()
+  }
+
+  fun refreshSavedLocations() {
     viewModelScope.launch {
+      savedLocations.clear()
       savedLocations.addAll(searchRepository.getAllLocations())
     }
   }

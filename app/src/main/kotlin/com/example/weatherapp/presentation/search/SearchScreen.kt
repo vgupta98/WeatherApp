@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.weatherapp.R
 import com.example.weatherapp.domain.location.LocationClient
+import com.example.weatherapp.presentation.component.LifecycleCallbacks
 import com.example.weatherapp.presentation.search.component.SavedLocationCard
 import com.example.weatherapp.presentation.search.component.SearchBar
 import kotlinx.coroutines.FlowPreview
@@ -40,6 +41,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(FlowPreview::class)
@@ -48,6 +51,10 @@ fun SearchScreen(
   locationClient: LocationClient,
   viewModel: SearchViewModel
 ) {
+
+  LifecycleCallbacks(onResume = {
+    viewModel.refreshSavedLocations()
+  })
 
   val scope = rememberCoroutineScope()
   val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
@@ -144,7 +151,7 @@ fun SearchScreen(
             SavedLocationCard(
               locationName = viewModel.savedLocations[index].name,
               locationRegion = "${viewModel.savedLocations[index].region}, ${viewModel.savedLocations[index].country}",
-              temperature = viewModel.savedLocations[index].lastTemperature,
+              temperature = "${viewModel.savedLocations[index].lastTemperature}°c",
               weatherIconUrl = "http:${viewModel.savedLocations[index].iconUrl}",
               weatherTime = viewModel.savedLocations[index].localtimeEpoch.toFormattedTime(),
               onTap = {
@@ -180,89 +187,6 @@ fun SearchScreen(
         }
       }
     }
-
-    // when {
-    //   viewModel.savedLocations.isEmpty() && viewModel.searchedLocations.isEmpty() -> {
-    //     Column(
-    //       modifier = Modifier.padding(horizontal = 56.dp),
-    //       horizontalAlignment = Alignment.CenterHorizontally
-    //     ) {
-    //       Spacer(modifier = Modifier.size(84.dp))
-    //       Icon(
-    //         modifier = Modifier.size(88.dp),
-    //         painter = painterResource(id = R.drawable.ic_weather_mix),
-    //         contentDescription = null,
-    //         tint = Color(0xFFE5E5E5)
-    //       )
-    //       Spacer(modifier = Modifier.size(28.dp))
-    //       Text(
-    //         textAlign = TextAlign.Center,
-    //         text = "Search for a city or US/UK zip to check the weather",
-    //         style = MaterialTheme.typography.labelMedium,
-    //         color = Color(0xFFBEBEBE)
-    //       )
-    //     }
-    //   }
-    //
-    //   viewModel.searchedLocations.isEmpty() -> {
-    //     LazyColumn(
-    //       modifier = Modifier.fillMaxWidth()
-    //     ) {
-    //       items(
-    //         count = viewModel.savedLocations.size,
-    //         key = { index ->
-    //           viewModel.savedLocations[index].id
-    //         }
-    //       ) { index ->
-    //         SavedLocationCard(
-    //           locationName = viewModel.savedLocations[index].name,
-    //           locationRegion = "${viewModel.savedLocations[index].region}, ${viewModel.savedLocations[index].country}",
-    //           temperature = viewModel.savedLocations[index].lastTemperature,
-    //           weatherIconUrl = "http:${viewModel.savedLocations[index].iconUrl}",
-    //           weatherTime = viewModel.savedLocations[index].localtimeEpoch.toFormattedTime(),
-    //           onTap = {
-    //             viewModel.navigateToWeatherScreen("${viewModel.savedLocations[index].lat},${viewModel.savedLocations[index].lon}")
-    //           },
-    //           onDelete = {
-    //             viewModel.removeLocation(viewModel.savedLocations[index].id)
-    //           }
-    //         )
-    //       }
-    //     }
-    //   }
-    //
-    //   else -> {
-    //     LazyColumn(
-    //       modifier = Modifier.fillMaxWidth()
-    //     ) {
-    //       item {
-    //         CurrentLocation {
-    //           // get current location and navigate to weather screen
-    //           locationPermissionRequest.launch(
-    //             Manifest.permission.ACCESS_COARSE_LOCATION
-    //           )
-    //         }
-    //       }
-    //       items(
-    //         count = viewModel.searchedLocations.size,
-    //         key = { index ->
-    //           viewModel.searchedLocations[index].id
-    //         }
-    //       ) { index ->
-    //         SearchedLocationCard(
-    //           locationName = viewModel.searchedLocations[index].name,
-    //           regionName = viewModel.searchedLocations[index].region,
-    //           countryName = viewModel.searchedLocations[index].country
-    //         ) {
-    //           // navigate to weather screen
-    //           viewModel.navigateToWeatherScreen(
-    //             latLong = "${viewModel.searchedLocations[index].lat},${viewModel.searchedLocations[index].lon}"
-    //           )
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
   }
 }
 
@@ -320,7 +244,11 @@ private fun CurrentLocation(
   }
 }
 
+private val sdf = SimpleDateFormat("h:mm a")
+
 private fun Long.toFormattedTime(): String {
   // todo: implement getting a formatted time
-  return "5 a.m."
+  val date = Date(this * 1000)
+  return sdf.format(date)
+  // return "5 a.m."
 }

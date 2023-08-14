@@ -45,7 +45,7 @@ fun HourForecastCard(
     Row(
       modifier = Modifier.fillMaxWidth(),
       verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.SpaceBetween
+      horizontalArrangement = Arrangement.SpaceEvenly
     ) {
       hourForecasts.forEach { forecast ->
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -60,7 +60,7 @@ fun HourForecastCard(
             modifier = Modifier.size(16.dp)
           )
           Text(
-            text = forecast.temperature,
+            text = "${forecast.temperature}°c",
             style = MaterialTheme.typography.labelSmall,
             color = Color.Black
           )

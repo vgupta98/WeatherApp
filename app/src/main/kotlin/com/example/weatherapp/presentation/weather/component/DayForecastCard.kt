@@ -80,7 +80,7 @@ private fun DayForecastRow(forecast: DayForecastUiModel) {
         tint = Color(0xFF303030)
       )
       Text(
-        text = forecast.highTemperature,
+        text = "${forecast.highTemperature}°c",
         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight(400)),
         color = Color(0xFF303030)
       )
@@ -92,7 +92,7 @@ private fun DayForecastRow(forecast: DayForecastUiModel) {
         tint = Color(0xFF303030)
       )
       Text(
-        text = forecast.lowTemperature,
+        text = "${forecast.lowTemperature}°c",
         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight(400)),
         color = Color(0xFF303030)
       )

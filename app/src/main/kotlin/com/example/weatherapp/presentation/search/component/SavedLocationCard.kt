@@ -64,7 +64,7 @@ fun SavedLocationCard(
     Box(
       modifier = Modifier
         .matchParentSize()
-        .background(Color.Red)
+        .background(Color(0xFFE34C4C))
     ) {
       Text(
         text = "Delete",

@@ -4,26 +4,33 @@ import android.Manifest
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.weatherapp.R
 import com.example.weatherapp.domain.location.LocationClient
+import com.example.weatherapp.presentation.search.component.SavedLocationCard
+import com.example.weatherapp.presentation.search.component.SearchBar
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onEach
@@ -38,9 +45,6 @@ fun SearchScreen(
   viewModel: SearchViewModel
 ) {
 
-  var location by remember {
-    mutableStateOf("")
-  }
   val scope = rememberCoroutineScope()
 
   val locationPermissionRequest = rememberLauncherForActivityResult(
@@ -54,14 +58,15 @@ fun SearchScreen(
           .timeout(2000.milliseconds)
           .catch { e ->
             Log.d("User Location", e.toString())
+            // show toast
           }
           .onEach { fetchedLocation ->
             Log.d("User Location", "new location")
             val lat = fetchedLocation.latitude.toString()
             val long = fetchedLocation.longitude.toString()
-
-            location = "$lat,$long"
-            Log.d("User Location", location)
+            viewModel.navigateToWeatherScreen("$lat,$long")
+            // location = "$lat,$long"
+            // Log.d("User Location", location)
           }
           .firstOrNull()
       }
@@ -70,31 +75,157 @@ fun SearchScreen(
     }
   }
 
-  DisposableEffect(Unit) {
-    onDispose {
-      scope.cancel()
-    }
-  }
-
   Column(
-    modifier = Modifier.fillMaxSize(),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center
+    modifier = Modifier
+      .fillMaxSize()
+      .background(Color.White)
   ) {
-    Button(onClick = {
-      locationPermissionRequest.launch(
-        Manifest.permission.ACCESS_COARSE_LOCATION
-      )
-    }) {
-      Text(text = "Get location")
-    }
-    Spacer(Modifier.size(16.dp))
-    Text(text = location)
-    Spacer(modifier = Modifier.size(16.dp))
-    Button(onClick = {
-      viewModel.navigateToWeatherScreen(location)
-    }) {
-      Text(text = "Navigate to weather screen")
+    Spacer(modifier = Modifier.size(103.dp))
+    Text(
+      text = "Weather App",
+      style = MaterialTheme.typography.titleLarge,
+      color = Color.Black,
+      modifier = Modifier.padding(start = 16.dp)
+    )
+    Spacer(modifier = Modifier.size(37.dp))
+    SearchBar(searchValue = viewModel.searchQuery, onSearchValueChange = viewModel::onQueryChange)
+
+    when {
+      viewModel.savedLocations.isEmpty() && viewModel.searchedLocations.isEmpty() -> {
+        Column(
+          modifier = Modifier.padding(horizontal = 56.dp),
+          horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+          Spacer(modifier = Modifier.size(84.dp))
+          Icon(
+            modifier = Modifier.size(88.dp),
+            painter = painterResource(id = R.drawable.ic_weather_mix),
+            contentDescription = null,
+            tint = Color(0xFFE5E5E5)
+          )
+          Spacer(modifier = Modifier.size(28.dp))
+          Text(
+            textAlign = TextAlign.Center,
+            text = "Search for a city or US/UK zip to check the weather",
+            style = MaterialTheme.typography.labelMedium,
+            color = Color(0xFFBEBEBE)
+          )
+        }
+      }
+
+      viewModel.searchedLocations.isEmpty() -> {
+        LazyColumn(
+          modifier = Modifier.fillMaxWidth()
+        ) {
+          items(
+            count = viewModel.savedLocations.size,
+            key = { index ->
+              viewModel.savedLocations[index].id
+            }
+          ) { index ->
+            SavedLocationCard(
+              locationName = viewModel.savedLocations[index].name,
+              locationRegion = "${viewModel.savedLocations[index].region}, ${viewModel.savedLocations[index].country}",
+              temperature = viewModel.savedLocations[index].lastTemperature,
+              weatherIconUrl = "http:${viewModel.savedLocations[index].iconUrl}",
+              weatherTime = viewModel.savedLocations[index].localtimeEpoch.toFormattedTime(),
+              onTap = {
+                viewModel.navigateToWeatherScreen("${viewModel.savedLocations[index].lat},${viewModel.savedLocations[index].lon}")
+              },
+              onDelete = {
+                viewModel.removeLocation(viewModel.savedLocations[index].id)
+              }
+            )
+          }
+        }
+      }
+
+      viewModel.savedLocations.isEmpty() -> {
+        LazyColumn(
+          modifier = Modifier.fillMaxWidth()
+        ) {
+          item {
+            CurrentLocation {
+              // get current location and navigate to weather screen
+              locationPermissionRequest.launch(
+                Manifest.permission.ACCESS_COARSE_LOCATION
+              )
+            }
+          }
+          items(
+            count = viewModel.searchedLocations.size,
+            key = { index ->
+              viewModel.searchedLocations[index].id
+            }
+          ) { index ->
+            SearchedLocationCard(
+              locationName = viewModel.searchedLocations[index].name,
+              regionName = viewModel.searchedLocations[index].region,
+              countryName = viewModel.searchedLocations[index].country
+            ) {
+              // navigate to weather screen
+            }
+          }
+        }
+      }
     }
   }
+}
+
+@Composable
+private fun SearchedLocationCard(
+  locationName: String,
+  regionName: String,
+  countryName: String,
+  onTap: () -> Unit
+) {
+  Column(
+    modifier = Modifier
+      .fillMaxWidth()
+      .clickable { onTap() }
+      .padding(start = 16.dp)
+  ) {
+    Spacer(modifier = Modifier.size(16.dp))
+    Text(
+      text = "$locationName, $regionName, $countryName",
+      style = MaterialTheme.typography.labelMedium,
+      color = Color.Black
+    )
+    Spacer(modifier = Modifier.size(14.dp))
+    Spacer(
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(1.dp)
+        .background(Color(0xFFEFEFEF))
+    )
+  }
+}
+
+@Composable
+private fun CurrentLocation(
+  onTap: () -> Unit,
+) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+      .clickable { onTap() }
+      .padding(16.dp)
+  ) {
+    Icon(
+      painter = painterResource(id = R.drawable.ic_near_me),
+      contentDescription = null,
+      tint = Color(0xFF3B60E4),
+      modifier = Modifier.size(16.dp)
+    )
+    Spacer(modifier = Modifier.size(6.dp))
+    Text(
+      text = "Current Location",
+      color = Color(0xFF3B60E4),
+      style = MaterialTheme.typography.labelMedium
+    )
+  }
+}
+
+private fun Long.toFormattedTime(): String {
+  return "5 a.m."
 }

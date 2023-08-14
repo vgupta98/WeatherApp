@@ -65,7 +65,7 @@ fun AlertCard(
 
 @Preview
 @Composable
-fun AlertCardPreview() {
+private fun AlertCardPreview() {
   MaterialTheme {
     AlertCard(
       alertName = "Snow",

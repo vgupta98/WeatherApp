@@ -66,12 +66,14 @@ data class Location(
   val lat: Double,
   val localtime: String,
   @Json(name = "localtime_epoch")
-  val localtimeEpoch: Int,
+  val localtimeEpoch: Long,
   val lon: Double,
   val name: String,
   val region: String,
   @Json(name = "tz_id")
-  val tzId: String
+  val tzId: String,
+  val lastTemperature: String = "",
+  val iconUrl: String = ""
 )
 
 @JsonClass(generateAdapter = true)
